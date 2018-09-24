@@ -8,10 +8,10 @@ def plot_fit(data, predictions):
     fig, axs = plt.subplots(1, 4, figsize=(12, 3))
 
     plot_rt_by_difficulty(data, predictions,
-                          xlims =(0, 10), xlabel_skip=2,
+                          xlims =(0, 5), xlabel_skip=2,
                           ax=axs[0])
     plot_pleft_by_left_minus_mean_others(data, predictions,
-                                         xlabel_skip=4, xlims=[-6, 6.5], xlabel_start=0,
+                                         xlabel_skip=2, xlims=[-6, 6.5], xlabel_start=0,
                                          ax=axs[1])
     plot_pleft_by_left_gaze_advantage(data, predictions,
                                       ax=axs[2])
