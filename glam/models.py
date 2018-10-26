@@ -28,11 +28,11 @@ class GLAM(object):
         self.trace = glam.fit.fit_models(self.model, method=method, **kwargs)
         self.estimates = glam.utils.extract_modes(self.trace)
 
-    def compute_dic(self):
+    def compute_waic(self):
         if not isinstance(self.model, list):
-            self.dic = pm.dic(trace=self.trace, model=self.model)
+            self.waic = pm.waic(trace=self.trace, model=self.model)
         else:
-            self.dic = np.array([pm.dic(trace=trace, model=model)
+            self.waic = np.array([pm.waic(trace=trace, model=model)
                                  for (trace, model) in zip(self.trace, self.model)])
 
     def predict(self, n_repeats=1, boundary=1., error_weight=0.05):
