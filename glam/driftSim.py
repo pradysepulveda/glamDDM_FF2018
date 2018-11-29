@@ -1,3 +1,4 @@
+# By PSD from BDM_lab based on GLAM components. (Nov 2018)
 import numpy as np
 import pandas as pd
 from scipy.stats import invgauss
