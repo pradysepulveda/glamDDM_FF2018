@@ -11,13 +11,17 @@ def compute_gaze_influence(data):
 
     # calculate relative item value of left over mean of other options
     if 'value_left_minus_mean_others' not in data.columns:
-        data['value_left_minus_mean_others'] = data['item_value_0'] - 0.5 * (data['item_value_1'] + data['item_value_2'])
-    # calculate value range of other options
-    data['value_range_others'] = np.abs(data['item_value_1'] - data['item_value_2'])
+        data['value_left_minus_mean_others'] = data['item_value_0'] - data['item_value_1']
+    
+    # -- Not used in case of two items (PSD, 11/2018)
+    ## calculate value range of other options
+    #data['value_range_others'] = np.abs(data['item_value_1'] - data['item_value_2'])
+    
+    
     # Add indicator column for left choices
     data['left_chosen'] = data['choice'] == 0
     # Calculate relative gaze advantage of left over other options
-    data['gaze_left_minus_mean_others'] = data['gaze_0'] - 0.5 * (data['gaze_1'] + data['gaze_2'])
+    data['gaze_left_minus_mean_others'] = data['gaze_0'] - data['gaze_1'] 
     # Add indicator column for trials with longer gaze towards left option
     data['left_longer'] = data['gaze_left_minus_mean_others'] > 0
 
@@ -26,7 +30,7 @@ def compute_gaze_influence(data):
     for s, subject in enumerate(data['subject'].unique()):
         subject_data = data[data['subject'] == subject].copy()
 
-        X = subject_data[['value_left_minus_mean_others', 'value_range_others']]
+        X = subject_data[['value_left_minus_mean_others']]
         X = sm.add_constant(X)
         y = subject_data['left_chosen']
 
