@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 from seaborn import despine
 
 
-## PSD mod : To adjust our presentation I inverted the rating presentation from right to left. HOwever, the ## variables are still labelled as left_minus_right 
-
 def plot_fit(data, predictions):
     fig, axs = plt.subplots(1, 4, figsize=(12, 3))
 
@@ -13,7 +11,7 @@ def plot_fit(data, predictions):
                           xlims =(0, 5), xlabel_skip=2,
                           ax=axs[0])
     plot_pleft_by_left_minus_mean_others(data, predictions,
-                                         xlabel_skip=5, xlims=[-3, 3], xlabel_start=0,
+                                         xlabel_skip=2, xlims=[-6, 6.5], xlabel_start=0,
                                          ax=axs[1])
     plot_pleft_by_left_gaze_advantage(data, predictions,
                                       ax=axs[2])
@@ -52,21 +50,8 @@ def add_difficulty(df):
     values_sorted = np.sort(values, axis=1)
     difficulty = values_sorted[:, -1] - np.mean(values_sorted[:, :-1], axis=1)
 
-
-    levels =  (np.max(difficulty) - np.min(difficulty))/10
-
-    lev_label = np.arange(np.min(difficulty), np.max(difficulty) + levels,levels) 
-    
-    difficulty2= []
-    for i in range(len(difficulty)):
-         difficulty2.append( lev_label[ int(difficulty[i]//levels)] )
-     
-    difficulty = difficulty2
-    
-    df['difficulty'] = np.around(difficulty, decimals = 0)
     df['difficulty'] = difficulty
 
-    
     return df.copy()
 
 
@@ -124,7 +109,7 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
     ax.set_xlabel('Max. rating – other rating')
     ax.set_ylabel('Reaction time (ms)')
     ax.set_xticks(x[::xlabel_skip])
-    ax.set_xticklabels(np.around(means.index.values[::xlabel_skip],decimals = 1))
+    ax.set_xticklabels(means.index.values[::xlabel_skip])
 
     despine()
 
@@ -148,18 +133,9 @@ def add_left_minus_mean_others(df):
     n_items = len(value_cols)
 
     values = df[value_cols].values
-    left_minus_mean_others = values[:, 1] - np.mean(values[:, 0:], axis=1)
-    
-                       
-   # levels =  (np.max(left_minus_mean_others) - np.min(left_minus_mean_others))/10
+    left_minus_mean_others = values[:, 0] - np.mean(values[:, 1:], axis=1)
 
-  #  lev_label = np.arange(np.min(left_minus_mean_others), np.max(left_minus_mean_others) + levels,levels) 
-    
-  #  left_minus_mean_others2= []
-  #  for i in range(len(left_minus_mean_others)):
-  #       left_minus_mean_others2.append( lev_label[ int(left_minus_mean_others[i]//levels)] )                   
-    
-    df['left_minus_mean_others'] = np.around(left_minus_mean_others,decimals= 1) 
+    df['left_minus_mean_others'] = left_minus_mean_others
 
     return df.copy()
 
@@ -197,13 +173,8 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
 
         # Compute relevant variables
         df = add_left_minus_mean_others(df)
-        df['left_chosen'] = df['choice'] == 1
-        
-        #print (means.index.values)
-        #print ("hola")
-    
-        #print (df.left_minus_mean_others.unique())
-        
+        df['left_chosen'] = df['choice'] == 0
+
         # Compute summary statistics
         subject_means = df.groupby(
             ['subject', 'left_minus_mean_others']).left_chosen.mean()
@@ -211,10 +182,7 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
             xlims[0]:xlims[1]]
         sems = subject_means.groupby('left_minus_mean_others').sem()[
             xlims[0]:xlims[1]]
-        
-        print ("hola2")    
-        print (means)
-        
+
         x = np.arange(len(means))
 
         predicted = False if i == 0 else True
@@ -230,8 +198,8 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
 
     ax.axhline(1 / n_items, linestyle='--', color='k', linewidth=1, alpha=0.5)
 
-    ax.set_xlabel('Right rating – Left rating')
-    ax.set_ylabel('P(Right chosen)')
+    ax.set_xlabel('Left rating – Right rating')
+    ax.set_ylabel('P(left chosen)')
     ax.set_ylim(-0.05, 1.05)
     ax.set_xticks(x[xlabel_start::xlabel_skip])
     ax.set_xticklabels(means.index.values[xlabel_start::xlabel_skip])
@@ -258,7 +226,7 @@ def add_left_gaze_advantage(df):
     n_items = len(gaze_cols)
 
     gaze = df[gaze_cols].values
-    left_gaze_advantage_raw = gaze[:, 1] - np.mean(gaze[:, 0:], axis=1)
+    left_gaze_advantage_raw = gaze[:, 0] - np.mean(gaze[:, 1:], axis=1)
     df['left_gaze_advantage_raw'] = left_gaze_advantage_raw
     bins_values = []
     
@@ -314,7 +282,7 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
         df['left_gaze_advantage_bin'] = pd.cut(df['left_gaze_advantage'],
                                                bins=bins, include_lowest=True,
                                                labels=bins[:-1])
-        df['left_chosen'] = df['choice'] == 1
+        df['left_chosen'] = df['choice'] == 0
 
         # Compute summary statistics
         subject_means = df.groupby(
@@ -336,8 +304,8 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
         else:  # plot predictions
             ax.plot(x, means, '--o', markerfacecolor='none')
 
-    ax.set_xlabel('Right gaze – Left gaze')
-    ax.set_ylabel('P(Right chosen)')
+    ax.set_xlabel('Left gaze – Right gaze')
+    ax.set_ylabel('P(left chosen)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(means.index.values[::xlabel_skip])
 
@@ -363,7 +331,7 @@ def add_left_relative_value(df):
                    if col.startswith('item_value_')])
     n_items = len(value_cols)
     values = df[value_cols].values
-    relative_value_left = values[:, 1] - np.mean(values[:, 0:])
+    relative_value_left = values[:, 0] - np.mean(values[:, 1:])
     df['left_relative_value'] = relative_value_left
 
     return df.copy()
@@ -382,7 +350,7 @@ def add_corrected_choice_left(df):
     """
 
     # recode choice
-    df['left_chosen'] = df['choice'].values == 1
+    df['left_chosen'] = df['choice'].values == 0
 
     # left relative value
     df = add_left_relative_value(df)
@@ -437,7 +405,7 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
 
         # Compute relevant variables
         # recode choice
-        df['left_chosen'] = df['choice'].values == 1
+        df['left_chosen'] = df['choice'].values == 0
         # left final gaze advantage
         df = add_left_gaze_advantage(df)
         gaze_bins = np.linspace(0, n_bins, n_bins+1)
@@ -467,8 +435,8 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
         else:  # plot predictions
             ax.plot(x, means, '--o', markerfacecolor='none')
 
-    ax.set_xlabel('Right gaze – Left gaze')
-    ax.set_ylabel('Corrected P(Right chosen)')
+    ax.set_xlabel('Left gaze – Right gaze')
+    ax.set_ylabel('Corrected P(left chosen)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(means.index.values[::xlabel_skip])
     ax.set_ylim(-.4, .4)
