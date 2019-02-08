@@ -2,15 +2,16 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from seaborn import despine
-
+import seaborn as sns
+sns.set(color_codes=True)
 
 ## PSD mod : To adjust our presentation I inverted the rating presentation from right to left. HOwever, the ## variables are still labelled as left_minus_right 
 
 def plot_fit(data, predictions):
-    fig, axs = plt.subplots(1, 4, figsize=(12, 3))
-
+    fig, axs = plt.subplots(2, 2, figsize=(15, 15))
+    sns.set(style='white', font_scale=1.5)
     plot_rt_by_difficulty(data, predictions,
-                          xlims =(0, 5), xlabel_skip=2,
+                          xlims =(0, 5), xlabel_skip=2, color1 ='#AC5255',
                           ax=axs[0])
     plot_pleft_by_left_minus_mean_others(data, predictions,
                                          xlabel_skip=5, xlims=[-3, 3], xlabel_start=0,
@@ -21,9 +22,9 @@ def plot_fit(data, predictions):
                                          ax=axs[3])
 
     # Labels
-    for label, ax in zip(list('ABCD'), axs.ravel()):
-        ax.text(-0.15, 1.175, label, transform=ax.transAxes,
-                fontsize=16, fontweight='bold', va='top')
+   # for label, ax in zip(list('ABCD'), axs.ravel()):
+   #     ax.text(-0.15, 1.175, label, transform=ax.transAxes,
+   #             fontsize=16, fontweight='bold', va='top')
 
     fig.tight_layout()
 
@@ -70,7 +71,7 @@ def add_difficulty(df):
     return df.copy()
 
 
-def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xlabel_skip=2):
+def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xlabel_skip=2, color1 ='#AC5255'):
     """
     Plot SI1 Data with model predictions
     a) RT by difficulty
@@ -86,6 +87,8 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
+        # Set seaborn style for the plot
+        sns.set(style='white')
 
     if predictions is None:
         dataframes = [data]
@@ -112,10 +115,10 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
 
         if not predicted:  # plot underlying data
             ax.bar(x, means,
-                   linewidth=1, edgecolor='k', facecolor='w',
+                   linewidth=1, edgecolor = '#AC5255', facecolor = '#AC5255',
                    width=0.5)
             ax.vlines(x, means - sems, means + sems,
-                      linewidth=1, color='k')
+                      linewidth=1, color= '#AC5255')
 
         else:  # plot predictions
             ax.plot(x, means, '--o', markerfacecolor='none')
@@ -180,6 +183,9 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
+        # Set seaborn style for the plot
+        sns.set(style='white')
+
 
     if predictions is None:
         dataframes = [data]
@@ -201,7 +207,6 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
         
         #print (means.index.values)
         #print ("hola")
-    
         #print (df.left_minus_mean_others.unique())
         
         # Compute summary statistics
@@ -212,8 +217,8 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
         sems = subject_means.groupby('left_minus_mean_others').sem()[
             xlims[0]:xlims[1]]
         
-        print ("hola2")    
-        print (means)
+      #  print ("hola2")    
+      #  print (means)
         
         x = np.arange(len(means))
 
@@ -293,7 +298,10 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
-
+        # Set seaborn style for the plot
+        sns.set(style='white')
+        
+        
     if predictions is None:
         dataframes = [data]
     elif isinstance(predictions, list):
@@ -420,7 +428,10 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
-
+        # Set seaborn style for the plot
+        sns.set(style='white')
+        
+        
     if predictions is None:
         dataframes = [data]
     elif isinstance(predictions, list):
