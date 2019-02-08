@@ -8,23 +8,25 @@ sns.set(color_codes=True)
 ## PSD mod : To adjust our presentation I inverted the rating presentation from right to left. HOwever, the ## variables are still labelled as left_minus_right 
 
 def plot_fit(data, predictions):
-    fig, axs = plt.subplots(2, 2, figsize=(15, 15))
-    sns.set(style='white', font_scale=1.5)
+    fig, axs = plt.subplots(1, 4, figsize=(12, 3))
+    # Set seaborn style for the plot
+    sns.set(style='white')
+
     plot_rt_by_difficulty(data, predictions,
                           xlims =(0, 5), xlabel_skip=2,
-                          ax=axs[0][0])
+                          ax=axs[0])
     plot_pleft_by_left_minus_mean_others(data, predictions,
                                          xlabel_skip=5, xlims=[-3, 3], xlabel_start=0,
-                                         ax=axs[0][1])
+                                         ax=axs[1])
     plot_pleft_by_left_gaze_advantage(data, predictions,
-                                      ax=axs[1][0])
+                                      ax=axs[2])
     plot_corpleft_by_left_gaze_advantage(data, predictions,
-                                         ax=axs[1][1])
+                                         ax=axs[3])
 
     # Labels
-   # for label, ax in zip(list('ABCD'), axs.ravel()):
-   #     ax.text(-0.15, 1.175, label, transform=ax.transAxes,
-   #             fontsize=16, fontweight='bold', va='top')
+#    for label, ax in zip(list('ABCD'), axs.ravel()):
+#        ax.text(-0.15, 1.175, label, transform=ax.transAxes,
+#                fontsize=16, fontweight='bold', va='top')
 
     fig.tight_layout()
 
@@ -87,8 +89,6 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
-        # Set seaborn style for the plot
-        sns.set(style='white')
 
     if predictions is None:
         dataframes = [data]
@@ -114,20 +114,18 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
         predicted = False if i == 0 else True
 
         if not predicted:  # plot underlying data
-            ax.plot(x, means, 'o', markerfacecolor='none',
-                    color='k', linewidth=1)
-           # ax.bar(x, means,
-           #        linewidth=1, edgecolor = 'k', facecolor = 'w',
-           #        width=0.5)
+            ax.bar(x, means,
+                   linewidth=1, edgecolor='#4F6A9A', facecolor='#4F6A9A',
+                   width=0.5)
             ax.vlines(x, means - sems, means + sems,
-                      linewidth=1, color= 'k')
+                      linewidth=1, color='k')
 
         else:  # plot predictions
             ax.plot(x, means, '--o', markerfacecolor='none')
 
     ax.set_ylim(2000, 3500)
-    ax.set_xlabel('|ΔVal|')
-    ax.set_ylabel('RT (ms)')
+    ax.set_xlabel('Max. rating – other rating')
+    ax.set_ylabel('Reaction time (ms)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(np.around(means.index.values[::xlabel_skip],decimals = 1))
 
@@ -185,9 +183,6 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
-        # Set seaborn style for the plot
-        sns.set(style='white')
-
 
     if predictions is None:
         dataframes = [data]
@@ -207,6 +202,11 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
         df = add_left_minus_mean_others(df)
         df['left_chosen'] = df['choice'] == 1
         
+        #print (means.index.values)
+        #print ("hola")
+    
+        #print (df.left_minus_mean_others.unique())
+        
         # Compute summary statistics
         subject_means = df.groupby(
             ['subject', 'left_minus_mean_others']).left_chosen.mean()
@@ -214,6 +214,9 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
             xlims[0]:xlims[1]]
         sems = subject_means.groupby('left_minus_mean_others').sem()[
             xlims[0]:xlims[1]]
+        
+      #  print ("hola2")    
+      #  print (means)
         
         x = np.arange(len(means))
 
@@ -230,8 +233,8 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
 
     ax.axhline(1 / n_items, linestyle='--', color='k', linewidth=1, alpha=0.5)
 
-    ax.set_xlabel('ΔVal')
-    ax.set_ylabel('P(Right Item)')
+    ax.set_xlabel('Right rating – Left rating')
+    ax.set_ylabel('P(Right chosen)')
     ax.set_ylim(-0.05, 1.05)
     ax.set_xticks(x[xlabel_start::xlabel_skip])
     ax.set_xticklabels(means.index.values[xlabel_start::xlabel_skip])
@@ -293,10 +296,7 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
-        # Set seaborn style for the plot
-        sns.set(style='white')
-        
-        
+
     if predictions is None:
         dataframes = [data]
     elif isinstance(predictions, list):
@@ -330,19 +330,17 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
         predicted = False if i == 0 else True
 
         if not predicted:  # plot underlying data
-            ax.plot(x, means, 'o', markerfacecolor='none',
-                    color='k', linewidth=1)
-            #ax.bar(x, means,
-            #       linewidth=1, edgecolor='k', facecolor='w',
-            #       width=0.5)
+            ax.bar(x, means,
+                   linewidth=1, edgecolor='k', facecolor='w',
+                   width=0.5)
             ax.vlines(x, means - sems, means + sems,
                       linewidth=1, color='k')
 
         else:  # plot predictions
             ax.plot(x, means, '--o', markerfacecolor='none')
 
-    ax.set_xlabel('ΔGaze')
-    ax.set_ylabel('P(Right Item)')
+    ax.set_xlabel('Right gaze – Left gaze')
+    ax.set_ylabel('P(Right chosen)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(means.index.values[::xlabel_skip])
 
@@ -425,10 +423,7 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(4, 3))
-        # Set seaborn style for the plot
-        sns.set(style='white')
-        
-        
+
     if predictions is None:
         dataframes = [data]
     elif isinstance(predictions, list):
@@ -466,19 +461,17 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
         predicted = False if i == 0 else True
 
         if not predicted:  # plot underlying data
-            ax.plot(x, means, 'o', markerfacecolor='none',
-                    color='k', linewidth=1)
-            #ax.bar(x, means,
-            #       linewidth=1, edgecolor='k', facecolor='w',
-            #       width=0.5)
+            ax.bar(x, means,
+                   linewidth=1, edgecolor='k', facecolor='w',
+                   width=0.5)
             ax.vlines(x, means - sems, means + sems,
                       linewidth=1, color='k')
 
         else:  # plot predictions
             ax.plot(x, means, '--o', markerfacecolor='none')
 
-    ax.set_xlabel('ΔGaze')
-    ax.set_ylabel('Corrected P(Right Item)')
+    ax.set_xlabel('Right gaze – Left gaze')
+    ax.set_ylabel('Corrected P(Right chosen)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(means.index.values[::xlabel_skip])
     ax.set_ylim(-.4, .4)
