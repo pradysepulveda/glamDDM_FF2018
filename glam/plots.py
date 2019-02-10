@@ -7,18 +7,17 @@ sns.set(color_codes=True)
 
 ## PSD mod : To adjust our presentation I inverted the rating presentation from right to left. HOwever, the ## variables are still labelled as left_minus_right 
 
-def plot_fit(data, predictions):
+def plot_fit(data, predictions, color_data = '#4F6A9A' ):
     fig, axs = plt.subplots(2, 2, figsize=(15, 15))
     sns.set(style='white', font_scale=1.5)
     plot_rt_by_difficulty(data, predictions,
-                          xlims =(0, 5), xlabel_skip=2,
+                          xlims =(0, 5), xlabel_skip=2,color1 = color_data ,
                           ax=axs[0][0])
     plot_pleft_by_left_minus_mean_others(data, predictions,
-                                         xlabel_skip=5, xlims=[-3, 3], xlabel_start=0,
-                                         ax=axs[0][1])
-    plot_pleft_by_left_gaze_advantage(data, predictions,
+                                         xlabel_skip=5, xlims=[-3, 3], xlabel_start=0,color1 =                                                  color_data, ax=axs[0][1])
+    plot_pleft_by_left_gaze_advantage(data, predictions,color1 = color_data,
                                       ax=axs[1][0])
-    plot_corpleft_by_left_gaze_advantage(data, predictions,
+    plot_corpleft_by_left_gaze_advantage(data, predictions, color1 = color_data,
                                          ax=axs[1][1])
 
     # Labels
@@ -71,7 +70,7 @@ def add_difficulty(df):
     return df.copy()
 
 
-def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xlabel_skip=2):
+def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xlabel_skip=2,color1 = '#4F6A9A'):
     """
     Plot SI1 Data with model predictions
     a) RT by difficulty
@@ -110,20 +109,32 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
         sems = subject_means.groupby('difficulty').sem()[xlims[0]:xlims[1]]
 
         x = np.arange(len(means))
-
+        
+        # Add labels for scatter plot of mean rt per participant
+        scatter_data = subject_means.reset_index()
+        x_scatter = []
+        group_labels = np.sort(scatter_data.difficulty.unique())
+        for ii in range(len(scatter_data.difficulty.values)):
+            a = scatter_data.difficulty.values[ii]
+            position_item =  x[np.where(group_labels==a)[0][0]]
+            x_scatter.append(position_item) 
+        ## ********    
+        
         predicted = False if i == 0 else True
-
+        
+        # Colors for predicted
+        c_pred = [color1,'#607681' , '#D0CD94' ]
+        
         if not predicted:  # plot underlying data
-            ax.plot(x, means, 'o', markerfacecolor='none',
-                    color='k', linewidth=1)
-           # ax.bar(x, means,
-           #        linewidth=1, edgecolor = 'k', facecolor = 'w',
-           #        width=0.5)
+            ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
+                    color=color1, linewidth=1)
             ax.vlines(x, means - sems, means + sems,
-                      linewidth=1, color= 'k')
+                      linewidth=1, color= color1)
+            jittr = np.random.uniform(low=-max(x)/20,high=max(x)/20,size=len(scatter_data))/2
+            ax.plot(x_scatter+jittr, scatter_data.rt.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
 
         else:  # plot predictions
-            ax.plot(x, means, '--o', markerfacecolor='none')
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
 
     ax.set_ylim(2000, 3500)
     ax.set_xlabel('|ΔVal|')
@@ -169,7 +180,7 @@ def add_left_minus_mean_others(df):
     return df.copy()
 
 
-def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=[-5, 5], xlabel_skip=2, xlabel_start=1):
+def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=[-5, 5], xlabel_skip=2, xlabel_start=1, color1 = '#4F6A9A'):
     """
     Plot SI1 Data with model predictions
     b) P(left chosen) by left rating minus mean other rating
@@ -216,19 +227,35 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
             xlims[0]:xlims[1]]
         
         x = np.arange(len(means))
+        
+        # Add labels for scatter plot of mean left_minus_mean_others per participant
+        scatter_data = subject_means.reset_index()
 
+        x_scatter = []
+        group_labels = np.sort(df.left_minus_mean_others.unique())
+        for ii in range(len(scatter_data.left_minus_mean_others.values)):
+            a = scatter_data.left_minus_mean_others.values[ii]
+            position_item =  x[np.where(group_labels==a)[0][0]]
+            x_scatter.append(position_item) 
+        ## ********    
+        
         predicted = False if i == 0 else True
-
+        
+        # Colors for predicted
+        c_pred = [color1,'#607681' , '#D0CD94' ]
+        
         if not predicted:  # plot underlying data
-            ax.plot(x, means, 'o', markerfacecolor='none',
-                    color='k', linewidth=1)
+            ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
+                    color=color1, linewidth=1)
             ax.vlines(x, means - sems, means + sems,
-                      linewidth=1, color='k')
+                      linewidth=1, color= color1)
+            jittr = np.random.uniform(low=-max(x)/20,high=max(x)/20,size=len(scatter_data))/2
+            ax.plot(x_scatter+jittr, scatter_data.left_chosen.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
 
         else:  # plot predictions
-            ax.plot(x, means, '--', markerfacecolor='none')
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
 
-    ax.axhline(1 / n_items, linestyle='--', color='k', linewidth=1, alpha=0.5)
+    ax.axhline(1 / n_items, linestyle='--', color='k', linewidth=1, alpha=0.2)
 
     ax.set_xlabel('ΔVal')
     ax.set_ylabel('P(Right Item)')
@@ -275,7 +302,7 @@ def add_left_gaze_advantage(df):
     return df.copy()
 
 
-def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8, xlabel_skip=2):
+def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8, xlabel_skip=2, color1 = '#4F6A9A'):
     """
     Plot SI1 Data with model predictions
     c) P(left chosen) by left gaze minus mean other gaze
@@ -327,21 +354,34 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
 
         x = np.arange(len(means))
 
+        # Add labels for scatter plot of mean left_minus_mean_others per participant
+        scatter_data = subject_means.reset_index()
+
+        x_scatter = []
+        group_labels = np.sort(df.left_gaze_advantage_bin.unique())
+        for ii in range(len(scatter_data.left_gaze_advantage_bin.values)):
+            a = scatter_data.left_gaze_advantage_bin.values[ii]
+            position_item =  x[np.where(group_labels==a)[0][0]]
+            x_scatter.append(position_item) 
+        ## ********            
+
         predicted = False if i == 0 else True
+        
+        # Colors for predicted
+        c_pred = [color1,'#607681' , '#D0CD94' ]
 
         if not predicted:  # plot underlying data
-            ax.plot(x, means, 'o', markerfacecolor='none',
-                    color='k', linewidth=1)
-            #ax.bar(x, means,
-            #       linewidth=1, edgecolor='k', facecolor='w',
-            #       width=0.5)
+            ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
+                    color=color1, linewidth=1)
             ax.vlines(x, means - sems, means + sems,
-                      linewidth=1, color='k')
+                      linewidth=1, color= color1)
+            jittr = np.random.uniform(low=-max(x)/20,high=max(x)/20,size=len(scatter_data))/2
+            ax.plot(x_scatter+jittr, scatter_data.left_chosen.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
 
         else:  # plot predictions
-            ax.plot(x, means, '--o', markerfacecolor='none')
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
 
-    ax.set_xlabel('ΔGaze')
+    ax.set_xlabel('$Δ Gaze_{Bins}$')
     ax.set_ylabel('P(Right Item)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(means.index.values[::xlabel_skip])
@@ -408,7 +448,7 @@ def add_corrected_choice_left(df):
     return df.copy()
 
 
-def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8, xlabel_skip=2):
+def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8, xlabel_skip=2, color1 = '#4F6A9A'):
     """
     Plot SI1 Data with model predictions
     c) Corrected P(choice==left) by left gaze minus mean other gaze
@@ -463,21 +503,34 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
         sems = subject_means.groupby('left_gaze_advantage_bin').sem()
         x = np.arange(len(means))
 
+        # Add labels for scatter plot of mean left_minus_mean_others per participant
+        scatter_data = subject_means.reset_index()
+
+        x_scatter = []
+        group_labels = np.sort(df.left_gaze_advantage_bin.unique())
+        for ii in range(len(scatter_data.left_gaze_advantage_bin.values)):
+            a = scatter_data.left_gaze_advantage_bin.values[ii]
+            position_item =  x[np.where(group_labels==a)[0][0]]
+            x_scatter.append(position_item) 
+        ## ********            
+        
         predicted = False if i == 0 else True
+        
+        # Colors for predicted
+        c_pred = [color1,'#607681' , '#D0CD94' ]
 
         if not predicted:  # plot underlying data
-            ax.plot(x, means, 'o', markerfacecolor='none',
-                    color='k', linewidth=1)
-            #ax.bar(x, means,
-            #       linewidth=1, edgecolor='k', facecolor='w',
-            #       width=0.5)
+            ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
+                    color=color1, linewidth=1)
             ax.vlines(x, means - sems, means + sems,
-                      linewidth=1, color='k')
+                      linewidth=1, color= color1)
+            jittr = np.random.uniform(low=-max(x)/20,high=max(x)/20,size=len(scatter_data))/2
+            ax.plot(x_scatter+jittr, scatter_data.corrected_choice_left.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
 
         else:  # plot predictions
-            ax.plot(x, means, '--o', markerfacecolor='none')
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
 
-    ax.set_xlabel('ΔGaze')
+    ax.set_xlabel('$Δ Gaze_{Bins}$')
     ax.set_ylabel('Corrected P(Right Item)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(means.index.values[::xlabel_skip])
