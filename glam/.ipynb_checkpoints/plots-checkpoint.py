@@ -123,7 +123,7 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
         predicted = False if i == 0 else True
         
         # Colors for predicted
-        c_pred = [color1,'#607681' , '#D0CD94' ]
+        c_pred = [color1,'#606060','#607681' ]
         
         if not predicted:  # plot underlying data
             ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
@@ -134,7 +134,7 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
             ax.plot(x_scatter+jittr, scatter_data.rt.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
 
         else:  # plot predictions
-            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i], linewidth=2.5, markersize = 10)
 
     ax.set_ylim(2000, 3500)
     ax.set_xlabel('|ΔVal|')
@@ -242,7 +242,7 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
         predicted = False if i == 0 else True
         
         # Colors for predicted
-        c_pred = [color1,'#607681' , '#D0CD94' ]
+        c_pred = [color1,'#606060','#607681']
         
         if not predicted:  # plot underlying data
             ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
@@ -253,7 +253,7 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
             ax.plot(x_scatter+jittr, scatter_data.left_chosen.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
 
         else:  # plot predictions
-            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i], linewidth=2.5, markersize = 10)
 
     ax.axhline(1 / n_items, linestyle='--', color='k', linewidth=1, alpha=0.2)
 
@@ -368,7 +368,7 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
         predicted = False if i == 0 else True
         
         # Colors for predicted
-        c_pred = [color1,'#607681' , '#D0CD94' ]
+        c_pred = [color1,'#606060','#607681']
 
         if not predicted:  # plot underlying data
             ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
@@ -376,10 +376,10 @@ def plot_pleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins=8,
             ax.vlines(x, means - sems, means + sems,
                       linewidth=1, color= color1)
             jittr = np.random.uniform(low=-max(x)/20,high=max(x)/20,size=len(scatter_data))/2
-            ax.plot(x_scatter+jittr, scatter_data.left_chosen.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
+            ax.plot(x_scatter+jittr, scatter_data.left_chosen.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None", linewidth=5, markersize = 10)
 
         else:  # plot predictions
-            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i], linewidth=2.5, markersize = 10)
 
     ax.set_xlabel('$Δ Gaze_{Bins}$')
     ax.set_ylabel('P(Right Item)')
@@ -517,7 +517,7 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
         predicted = False if i == 0 else True
         
         # Colors for predicted
-        c_pred = [color1,'#607681' , '#D0CD94' ]
+        c_pred = [color1,'#606060','#607681' ]
 
         if not predicted:  # plot underlying data
             ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
@@ -528,7 +528,7 @@ def plot_corpleft_by_left_gaze_advantage(data, predictions=None, ax=None, n_bins
             ax.plot(x_scatter+jittr, scatter_data.corrected_choice_left.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
 
         else:  # plot predictions
-            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i])
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i], linewidth=2.5, markersize = 10)
 
     ax.set_xlabel('$Δ Gaze_{Bins}$')
     ax.set_ylabel('Corrected P(Right Item)')
