@@ -5,16 +5,16 @@ from seaborn import despine
 import seaborn as sns
 sns.set(color_codes=True)
 
-## PSD mod : To adjust our presentation I inverted the rating presentation from right to left. HOwever, the ## variables are still labelled as left_minus_right 
+## PSD mod : To adjust our presentation I inverted the rating presentation from right to left. HOwever, the variables are still labelled as left_minus_right 
 
 def plot_fit(data, predictions, color_data = '#4F6A9A' ):
     fig, axs = plt.subplots(2, 2, figsize=(15, 15))
     sns.set(style='white', font_scale=1.5)
-    plot_rt_by_difficulty(data, predictions,
+    plot_rt_by_difficulty_zSc(data, predictions,
                           xlims =(0, 5), xlabel_skip=2,color1 = color_data ,
                           ax=axs[0][0])
     plot_pleft_by_left_minus_mean_others(data, predictions,
-                                         xlabel_skip=5, xlims=[-3, 3], xlabel_start=0,color1 =                                                  color_data, ax=axs[0][1])
+                                         xlabel_skip=5, xlims=[-3, 3], xlabel_start=0,color1 = color_data, ax=axs[0][1])
     plot_pleft_by_left_gaze_advantage(data, predictions,color1 = color_data,
                                       ax=axs[1][0])
     plot_corpleft_by_left_gaze_advantage(data, predictions, color1 = color_data,
@@ -139,6 +139,100 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
     ax.set_ylim(2000, 3500)
     ax.set_xlabel('|ΔVal|')
     ax.set_ylabel('RT (ms)')
+    ax.set_xticks(x[::xlabel_skip])
+    ax.set_xticklabels(np.around(means.index.values[::xlabel_skip],decimals = 1))
+
+    despine()
+    
+def z_score1(data_all, part_def,z_score_var):
+    z_matrix=[]
+    z_matrix_aux=[]
+
+    for i in (data_all[part_def].unique()):
+        Choicedata = data_all.loc[data_all[part_def] == i]    
+    
+        pX_A= pd.to_numeric(Choicedata[z_score_var]) 
+        pX_zA= (pX_A - np.mean(pX_A))/np.std(pX_A)
+
+    
+        z_matrix_aux= pX_zA.values
+    
+        for  j in range(len(z_matrix_aux)):    
+            z_matrix.append(z_matrix_aux[j])
+    return z_matrix
+    
+    
+def plot_rt_by_difficulty_zSc(data, predictions=None, ax=None, xlims=(1.5, 8.5), xlabel_skip=2,color1 = '#4F6A9A'):
+    """
+    Plot SI1 Data with model predictions
+    a) RT by difficulty
+
+    Parameters
+    ----------
+    data: <pandas DataFrame>
+
+    predictions: <pandas DataFrame> or <list of pandas DataFrames>
+
+    ax: <matplotlib.axes>
+
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(4, 3))
+        # Set seaborn style for the plot
+        sns.set(style='white')
+
+    if predictions is None:
+        dataframes = [data]
+    elif isinstance(predictions, list):
+        dataframes = [data] + predictions
+    else:
+        dataframes = [data] + [predictions]
+
+    for i, dataframe in enumerate(dataframes):
+
+        df = dataframe.copy()
+
+        # Compute relevant variables
+        df = add_difficulty(df)
+
+        df['zrt'] = z_score1(df,'subject','rt')
+        
+        # Compute summary statistics
+        subject_means = df.groupby(['subject', 'difficulty']).zrt.mean()
+        means = subject_means.groupby('difficulty').mean()[xlims[0]:xlims[1]]
+        sems = subject_means.groupby('difficulty').sem()[xlims[0]:xlims[1]]
+
+        x = np.arange(len(means))
+        
+        # Add labels for scatter plot of mean rt per participant
+        scatter_data = subject_means.reset_index()
+        x_scatter = []
+        group_labels = np.sort(scatter_data.difficulty.unique())
+        for ii in range(len(scatter_data.difficulty.values)):
+            a = scatter_data.difficulty.values[ii]
+            position_item =  x[np.where(group_labels==a)[0][0]]
+            x_scatter.append(position_item) 
+        ## ********    
+        
+        predicted = False if i == 0 else True
+        
+        # Colors for predicted
+        c_pred = [color1,'#606060','#607681' ]
+        
+        if not predicted:  # plot underlying data
+            ax.plot(x, means, 'o', markerfacecolor=color1, markersize = 10, fillstyle = 'full',
+                    color=color1, linewidth=1)
+            ax.vlines(x, means - sems, means + sems,
+                      linewidth=1, color= color1)
+            jittr = np.random.uniform(low=-max(x)/20,high=max(x)/20,size=len(scatter_data))/2
+            ax.plot(x_scatter+jittr, scatter_data.zrt.values, marker='o', ms=5, color=color1,alpha=0.3,linestyle="None")
+
+        else:  # plot predictions
+            ax.plot(x, means, '--o', markerfacecolor=c_pred[i],color=c_pred[i], linewidth=2.5, markersize = 10)
+
+    #ax.set_ylim(2000, 3500)
+    ax.set_xlabel('|ΔVal|')
+    ax.set_ylabel('zRT (ms)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(np.around(means.index.values[::xlabel_skip],decimals = 1))
 
@@ -291,7 +385,7 @@ def add_left_gaze_advantage(df):
     
     for i in (df['subject'].unique()):
         Choicedata_gaze = df.loc[df['subject'] == i]
-        bins_per_subj = pd.qcut(Choicedata_gaze['left_gaze_advantage_raw'], 8,labels=False)
+        bins_per_subj = pd.qcut(Choicedata_gaze['left_gaze_advantage_raw'], 8,labels=False , duplicates = 'drop')
         for  j in range(len(bins_per_subj)):    
             bins_values.append(bins_per_subj.values[j])
     
