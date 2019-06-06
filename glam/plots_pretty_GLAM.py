@@ -28,8 +28,8 @@ def plot_fit(data, predictions, color_data = '#4F6A9A',label1 = 'More',label2 = 
    #             fontsize=16, fontweight='bold', va='top')
 
 
-    patch1 = mpatches.Patch(facecolor=color_data,hatch=r'//', label = label1)
-    patch2 = mpatches.Patch(facecolor='#606060',hatch=r'//', label = label2)
+    patch1 = mpatches.Patch(facecolor=color_data,hatch=r'', label = label1)
+    patch2 = mpatches.Patch(facecolor='#606060',hatch=r'', label = label2)
 
     leg = plt.legend(handles=[patch1,patch2],fontsize=14,loc = 'lower right')
     leg.get_frame().set_facecolor('none')
