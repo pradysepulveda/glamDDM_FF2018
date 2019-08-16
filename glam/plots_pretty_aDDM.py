@@ -342,7 +342,8 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
             position_item =  x[np.where(group_labels==a)[0][0]]
             x_scatter.append(position_item) 
         ## ********    
-        
+        print(len(x))
+
         predicted = False if i == 0 else True
         
         # Colors for predicted
