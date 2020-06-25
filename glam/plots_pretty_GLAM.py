@@ -368,7 +368,7 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
 
     ax.axhline(1 / n_items, linestyle='--', color='k', linewidth=1, alpha=0.2)
 
-    ax.set_xlabel('$ΔVal_{Bins}$')
+    ax.set_xlabel('$ΔValue_{Bins}$')
     ax.set_ylabel('P(Right Item)')
     ax.set_ylim(-0.05, 1.05)
     ax.set_xticks(x[xlabel_start::xlabel_skip])

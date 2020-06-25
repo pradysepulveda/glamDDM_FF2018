@@ -9,7 +9,7 @@ sns.set(color_codes=True)
 
 ## PSD mod : To adjust our presentation I inverted the rating presentation from right to left. HOwever, the variables are still labelled as left_minus_right 
 
-def plot_fit(data, predictions, color_data = '#4F6A9A',label1 = 'More', label2 = 'aDDM Simulations'):
+def plot_fit(data, predictions, color_data = '#4F6A9A',label1 = 'More', label2 = 'aDDM simulations'):
     fig, axs = plt.subplots(2, 2, figsize=(15, 15))
     sns.set(style='white', font_scale=1.5)
     plot_rt_by_difficulty(data, predictions,
@@ -26,12 +26,19 @@ def plot_fit(data, predictions, color_data = '#4F6A9A',label1 = 'More', label2 =
    # for label, ax in zip(list('ABCD'), axs.ravel()):
    #     ax.text(-0.15, 1.175, label, transform=ax.transAxes,
    #             fontsize=16, fontweight='bold', va='top')
+    fsize = 30
 
+
+    for axis1 in [axs[0][0],axs[0][1],axs[1][0],axs[1][1]]:
+        axis1.xaxis.label.set_fontsize(fontsize = fsize) # x label
+        axis1.yaxis.label.set_fontsize(fontsize = fsize) # Y label
+        axis1.tick_params(axis="x", labelsize=20)
+        axis1.tick_params(axis="y", labelsize=20)
 
     patch1 = mpatches.Patch(facecolor=color_data,hatch=r'', label = label1)
     patch2 = mpatches.Patch(facecolor='#606060',hatch=r'', label = label2)
 
-    leg = plt.legend(handles=[patch1,patch2],fontsize=14,loc = 'lower right')
+    leg = plt.legend(handles=[patch1,patch2],fontsize=25,loc = 'lower right')
     leg.get_frame().set_facecolor('none')
     leg.get_frame().set_linewidth(0.0)
 
@@ -147,7 +154,7 @@ def plot_rt_by_difficulty(data, predictions=None, ax=None, xlims=(1.5, 8.5), xla
             ax.plot(x, means, '-o', markerfacecolor=c_pred[i],color=c_pred[i], linewidth=2.5, markersize = 10)
 
     ax.set_ylim(0, 5000)
-    ax.set_xlabel('|$ΔVal_{Bins}$|')
+    ax.set_xlabel('|$ΔValue_{Bins}$|')
     ax.set_ylabel('RT (ms)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(np.around(means.index.values[::xlabel_skip],decimals = 1))
@@ -241,7 +248,7 @@ def plot_rt_by_difficulty_zSc(data, predictions=None, ax=None, xlims=(1.5, 8.5),
             ax.plot(x, means, '-o', markerfacecolor=c_pred[i],color=c_pred[i], linewidth=2.5, markersize = 10)
 
     #ax.set_ylim(2000, 3500)
-    ax.set_xlabel('|$ΔVal_{Bins}$|')
+    ax.set_xlabel('|$ΔValue_{Bins}$|')
     ax.set_ylabel('zRT (ms)')
     ax.set_xticks(x[::xlabel_skip])
     ax.set_xticklabels(np.around(means.index.values[::xlabel_skip],decimals = 1))
@@ -362,7 +369,7 @@ def plot_pleft_by_left_minus_mean_others(data, predictions=None, ax=None, xlims=
 
     ax.axhline(1 / n_items, linestyle='--', color='k', linewidth=1, alpha=0.2)
 
-    ax.set_xlabel('$ΔVal_{Bins}$')
+    ax.set_xlabel('$ΔValue_{Bins}$')
     ax.set_ylabel('P(Right Item)')
     ax.set_ylim(-0.05, 1.05)
     ax.set_xticks(x[xlabel_start::xlabel_skip])

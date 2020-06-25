@@ -2,6 +2,7 @@ from . import utils
 from . import components
 from . import simulation
 from . import driftSim
+from . import driftSim_UneqVar
 from . import plots_pretty
 from . import plots_pretty_aDDM
 from . import plots_pretty_aDDM_zScored
